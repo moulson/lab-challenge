@@ -1,18 +1,17 @@
 class TestPanelsController < ApplicationController
 
   def show
-
     #Get the hash via id
     test_panel = TestPanel::DATA.select{|test| test[:id] == params[:id]}.first
 
     #make sure it's a valid id
     if test_panel.nil?
-      render json:{
+      json = {
         data:{
           error: "test panel with id '#{params[:id]}' not found"
         }
-      },
-      status: 400
+      }
+      render json: json, status: 400
       return nil
     end
 
@@ -25,11 +24,12 @@ class TestPanelsController < ApplicationController
     #sort tests alphabetically by id
     tests.sort_by! {|x| x[:id]}
 
-
-    sample_tubes = []
-    sample_volume_requirement = 0
+    
 
     #Iterate over tests and add values
+    sample_tubes = []
+    sample_volume_requirement = 0
+    
     tests.each do |t|
       sample_tubes.push(t[:sample_tube_type])
       sample_volume_requirement += t[:sample_volume_requirement]
@@ -39,7 +39,7 @@ class TestPanelsController < ApplicationController
     sample_tubes.uniq!
     sample_tubes.sort!
 
-    #build relationships hash
+    #create relationships hash
     relationships = []
     tests.each do |t|
       hash = {
@@ -49,6 +49,7 @@ class TestPanelsController < ApplicationController
       relationships.push(hash)
     end
 
+    #create data hash
     data = {
         type: 'test_panels',
         id: params[:id],
