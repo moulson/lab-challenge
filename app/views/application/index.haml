@@ -1,0 +1,106 @@
+!!! 5
+%html
+  %head
+    %title Thriva Lab coding challenge
+    %link{ href: "styles.css", :media => "screen", :rel => "stylesheet" }
+  %body
+    %h1 Instructions
+
+    %p The challenge is to build a simple lab API that can return some basic details on a 'test panel'. A test panel is merely a colletion of different tests that can be run in one go. Create an endpoint that will return a JSON representation of a test panel given a test panel ID e.g. 'TP1' The TestPanel class and the Test class both include a DATA constant that holds the data about each record. 
+
+    %p 
+      The response format should adhere to the
+      %a{target: '_blank', href: 'http://jsonapi.org/examples/'} JSON API spec.
+      For the purposes of this exercise, you should avoid using any external libraries to build the response.
+
+    %p The response should include the following attributes:
+
+    %ul
+      %li Price
+      %li Sample tube type(s) (calculated from associated tests)
+      %li Total sample volume requirement (calculated from associated tests)
+
+    %p It should also provide some information about the associated tests themselves in a 'relationship' field. For example, a request to the API with ID 'TP2' should return the following JSON
+
+    %pre.code
+      = preserve do
+        :escaped
+          {
+            "data": {
+              "type": "test_panels",
+              "id": "TP2",
+              "attributes": {
+                "price": 2100,
+                "sample_tube_types": ["purple", "yellow"],
+                "sample_volume_requirement": 3400
+              },
+              "relationships": {
+                "test": {
+                  "data": [
+                    { "id": "B12", "type": "test"},
+                    { "id": "HBA1C", "type": "test"}
+                  ]
+                }
+              }
+            }
+          }
+
+
+    %p The endpoint should also support an 'include' query parameter that returns an 'included' field along with the response. e.g. '...?include=test' should return the following response:
+
+    %pre.code
+      = preserve do
+        :escaped
+          {
+            "data": {
+              "type": "test_panels",
+              "id": "TP2",
+              "attributes": {
+                "price": 2100,
+                "sample_tube_types": ["purple", "yellow"],
+                "sample_volume_requirement": 3400
+              },
+              "relationships": {
+                "test": {
+                  "data": [
+                    { "id": "B12", "type": "test"},
+                    { "id": "HBA1C", "type": "test"}
+                  ]
+                }
+              }
+            },
+            "included": [
+              {
+                "type": "test",
+                "id": "B12",
+                "attributes": {
+                  "sample_volume_requirement": 180,
+                  "sample_tube_type: "yellow",
+                  "price": 1700
+                }
+              },
+              {
+                "type": "test",
+                "id": "HBA1C",
+                "attributes": {
+                  "sample_volume_requirement": 40,
+                  "sample_tube_type: "purple",
+                  "price": 1700
+                }
+              }
+            ]
+          }
+
+
+    %p Things to consider:
+
+    %ul
+      %li What happens if we pass and ID that doesn't match any existing test panel?
+      %li What if we pass an invalid 'include' query parameter?
+      %li How do we make sure everything is working?
+      %li How could we employ a caching strategy to improve performance?
+
+
+
+
+
